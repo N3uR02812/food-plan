@@ -1,0 +1,13 @@
+@import "../../../styles/colors.scss";
+
+.navbar {
+  position: fixed;
+  z-index: 1010;
+  width: 100%;
+  padding: 0;
+  box-shadow: 0px -7px 13px 4px black;
+}
+
+.shadowed {
+  box-shadow: 0px -7px 13px 4px black;
+}

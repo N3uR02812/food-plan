@@ -1,0 +1,31 @@
+<div class="row mx-0 p-3">
+  <ng-container *ngFor="let item of items">
+    <app-card class="col-md-6 col-lg-4 px-1"
+    [contentTemplate]="content"
+    [btnTemplate]="buttons"
+    [item]="item">
+    </app-card>
+  </ng-container>
+</div>
+
+<ng-template  #buttons let-item="item">
+  <button type="button" (click)="details(item)" class="btn flex-fill btn-success">
+    <i class="fas fa-edit"></i>
+  </button>
+  <a routerLink="/items" [queryParams]="{ container: item.Id }" class="btn flex-fill btn-primary">
+    <i class="fas fa-level-down-alt"></i>
+  </a>
+  <button type="button" (click)="remove(item)" class="btn flex-fill btn-danger">
+    <i class="fas fa-trash"></i>
+  </button>
+</ng-template>
+
+<ng-template #content let-item="item">
+  <div class="d-flex flex-column p-1">
+      <h5 class="card-title">{{item.Name}}</h5>
+      <div class="card-text">
+        <dt> Description: </dt>
+        <dd> {{item.Description}}</dd>
+      </div>
+  </div>
+</ng-template>

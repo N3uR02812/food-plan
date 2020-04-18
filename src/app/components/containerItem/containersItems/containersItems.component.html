@@ -1,0 +1,36 @@
+<div class="row mx-0 p-3">
+  <ng-container *ngFor="let item of items">
+    <ng-container *ngIf="filter == null || item.Name.toLowerCase().indexOf(filter.toLowerCase()) >= 0">
+      <app-card class="col-md-6 col-lg-4 px-1" [contentTemplate]="content" [btnTemplate]="buttons" [item]="item">
+      </app-card>
+    </ng-container>
+  </ng-container>
+</div>
+
+<ng-template #buttons let-item="item">
+  <button type="button" (click)="details(item)" class="btn flex-fill btn-info">
+    <i class="fas fa-edit"></i>
+  </button>
+  <button type="button" (click)="remove(item)" class="btn flex-fill btn-danger">
+    <i class="fas fa-trash"></i>
+  </button>
+</ng-template>
+
+<ng-template #content let-item="item">
+  <div class="d-flex flex-column p-1">
+    <div class="d-flex" style="height: 80px;">
+      <img *ngIf="item.Image" [src]="item.Image | sanitizer" style="max-width: 80px;max-height: 80px;">
+      <h5 class="card-title ml-1 mt-2">{{item.Name}}</h5>
+    </div>
+    <div class="d-flex flex-column pt-1">
+      <ngb-progressbar type="info" [value]="item.CurrentAmount | percentage : item.Amount" [max]="1" height="20px">
+      </ngb-progressbar>
+      <span> {{item.CurrentAmount}} of {{item.Amount}} {{item.AmountType}}</span>
+      <ngb-progressbar type="{{getDayDifference(today, item.ExpireDate) | percentage : 30 | barColor}}"
+        [value]="getDayDifference(today, item.ExpireDate) | percentage : 30" [max]="1" height="20px">
+      </ngb-progressbar>
+      <span [ngStyle]="{'visibility':item.ExpireDate  ? 'visible' : 'hidden'}"> Haltbar bis
+        {{item.ExpireDate | date:'dd.MM.yyyy'}}</span>
+    </div>
+  </div>
+</ng-template>
