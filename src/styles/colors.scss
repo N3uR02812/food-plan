@@ -1,0 +1,126 @@
+$violetDark: #8C4A5C;
+$violet: #D9A3B6;
+$peach:hsl(14, 96%, 98%);
+$brown: #BF784E;
+$brownLight: #8C4130;
+$lightgrey: #F2F2F2;
+
+$olive: #468d3f;
+$brownDark: #73482F;
+$lightbeige: #BF9075;
+$redbrown: #8C2B07;
+$redpeach: #F25C5C;
+$blue: #3f518d;
+$blueStrong: #2d4bae;
+
+$white: white;
+$primary: $blueStrong;
+$success: $olive;
+$warning: $lightbeige;
+$info: $violetDark;
+$danger: $redbrown;
+
+$cyan:    #17a2b8 !default;
+$yellow:  #ffc107 !default;
+$gray-100: #f8f9fa !default;
+$gray-800: #343a40 !default;
+
+/* For use in src/lib/core/theming/_palette.scss */
+$md-violet: (
+    50 : #f1e9eb,
+    100 : #ddc9ce,
+    200 : #c6a5ae,
+    300 : #af808d,
+    400 : #9d6574,
+    500 : #8c4a5c,
+    600 : #844354,
+    700 : #793a4a,
+    800 : #6f3241,
+    900 : #5c2230,
+    A100 : #ff9fb4,
+    A200 : #ff6c8c,
+    A400 : #ff3964,
+    A700 : #ff1f50,
+    contrast: (
+        50 : #000000,
+        100 : #000000,
+        200 : #000000,
+        300 : #000000,
+        400 : #ffffff,
+        500 : #ffffff,
+        600 : #ffffff,
+        700 : #ffffff,
+        800 : #ffffff,
+        900 : #ffffff,
+        A100 : #000000,
+        A200 : #000000,
+        A400 : #ffffff,
+        A700 : #ffffff,
+    )
+);
+
+$md-red: (
+    50 : #f4e2e2,
+    100 : #e3b6b6,
+    200 : #d08585,
+    300 : #bd5454,
+    400 : #af3030,
+    500 : #a10b0b,
+    600 : #990a0a,
+    700 : #8f0808,
+    800 : #850606,
+    900 : #740303,
+    A100 : #ffa2a2,
+    A200 : #ff6f6f,
+    A400 : #ff3c3c,
+    A700 : #ff2323,
+    contrast: (
+        50 : #000000,
+        100 : #000000,
+        200 : #000000,
+        300 : #ffffff,
+        400 : #ffffff,
+        500 : #ffffff,
+        600 : #ffffff,
+        700 : #ffffff,
+        800 : #ffffff,
+        900 : #ffffff,
+        A100 : #000000,
+        A200 : #000000,
+        A400 : #ffffff,
+        A700 : #ffffff,
+    )
+);
+
+$md-brown: (
+    50 : #f1e8e6,
+    100 : #ddc6c1,
+    200 : #c6a098,
+    300 : #af7a6e,
+    400 : #9d5e4f,
+    500 : #8c4130,
+    600 : #843b2b,
+    700 : #793224,
+    800 : #6f2a1e,
+    900 : #5c1c13,
+    A100 : #ffa095,
+    A200 : #ff7262,
+    A400 : #ff442f,
+    A700 : #ff2e15,
+    contrast: (
+        50 : #000000,
+        100 : #000000,
+        200 : #000000,
+        300 : #000000,
+        400 : #ffffff,
+        500 : #ffffff,
+        600 : #ffffff,
+        700 : #ffffff,
+        800 : #ffffff,
+        900 : #ffffff,
+        A100 : #000000,
+        A200 : #000000,
+        A400 : #ffffff,
+        A700 : #ffffff,
+    )
+);
