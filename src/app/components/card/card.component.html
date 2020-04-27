@@ -1,20 +1,25 @@
-<div class="card d-flex flex-wrap justify-content-around m-1">
-  <!-- <img src="..." class="card-img-top" alt="..."> -->
-  <div class="card-body">
-    <div class="d-flex">
-      <div class="w-100">
-        <ng-template [ngTemplateOutlet]="contentTemplate || defaultTemplate" [ngTemplateOutletContext]="{item: item}"></ng-template>
-      </div>
-      <div class="d-flex flex-column buttons">
-        <ng-template [ngTemplateOutlet]="btnTemplate || defaultBtnTemplate" [ngTemplateOutletContext]="{item: item}"></ng-template>
-      </div>
-    </div>
-  </div>
-</div>
+<mat-card class="example-card  m-1">
+  <mat-card-header>
+    <ng-template [ngTemplateOutlet]="headTemplate || defaultHeadTemplate" [ngTemplateOutletContext]="{item: item}"></ng-template>
+  </mat-card-header>
+  <mat-card-content>
+    <ng-template [ngTemplateOutlet]="contentTemplate || defaultContentTemplate" [ngTemplateOutletContext]="{item: item}"></ng-template>
+  </mat-card-content>
+  <mat-card-actions>
+    <ng-template [ngTemplateOutlet]="actionsTemplate || defaultActionsTemplate" [ngTemplateOutletContext]="{item: item}"></ng-template>
+  </mat-card-actions>
+</mat-card>
 
-<ng-template #defaultTemplate let-item="item">
-  <strong>{{item.Name}}</strong>
+<ng-template #defaultHeadTemplate let-item="item">
+  <div mat-card-avatar class="example-header-image"></div>
+  <mat-card-title>{{item.Name}}</mat-card-title>
+  <mat-card-subtitle>{{item.Description}}</mat-card-subtitle>
 </ng-template>
 
-<ng-template #defaultBtnTemplate let-item="item">
+<ng-template #defaultContentTemplate let-item="item">
+</ng-template>
+
+<ng-template #defaultActionsTemplate let-item="item">
+  <button mat-button>LIKE</button>
+  <button mat-button>SHARE</button>
 </ng-template>

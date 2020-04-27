@@ -1,30 +1,25 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Container } from 'src/app/models/container';
-import { ContainerService } from 'src/app/services/containerService';
+import { Category } from 'src/app/models/category';
 import { AppService } from 'src/app/services/appService';
 import { v4 as uuid } from 'uuid';
 import { switchMap } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
-import { ContainerDetailsComponent } from '../containersDetails/containersDetails.component';
+import { CategoryDetailsComponent } from '../categoriesDetails/categoriesDetails.component';
 import { ButtonInfo } from 'src/app/helper/buttonInfo';
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { CategoryService } from 'src/app/services/categoryService';
 
 @Component({
-  selector: 'app-containers',
-  templateUrl: './containers.component.html',
-  styleUrls: ['./containers.component.scss']
+  selector: 'app-categories',
+  templateUrl: './categories.component.html',
+  styleUrls: ['./categories.component.scss']
 })
-export class ContainersComponent implements OnInit, OnDestroy {
-  public items: Container[] = [];
+export class CategoriesComponent implements OnInit, OnDestroy {
+  public items: Category[] = [];
   private subscriptions: Subscription[] = [];
-  public buttons: ButtonInfo[] = [
-    new ButtonInfo('btn-success', 'fa-edit', this.details),
-    new ButtonInfo('btn-primary', 'fa-level-down-alt', this.remove),
-    new ButtonInfo('btn-danger', 'fa-trash', this.remove)
-  ];
 
   constructor(
-    public containerService: ContainerService,
+    public containerService: CategoryService,
     public dialog: MatDialog,
     public appService: AppService
   ) { }
@@ -57,8 +52,8 @@ export class ContainersComponent implements OnInit, OnDestroy {
     return this.containerService.getList();
   }
 
-  details(item: Container) {
-    const dialogRef = this.dialog.open(ContainerDetailsComponent, {
+  details(item: Category) {
+    const dialogRef = this.dialog.open(CategoryDetailsComponent, {
       data: {
         isCreate: false,
         item: Object.assign({}, item)
@@ -75,15 +70,13 @@ export class ContainersComponent implements OnInit, OnDestroy {
 
   add() {
     const newItem = {
-      Capacity: 0,
-      Items: [],
       Id: uuid(),
       Name: 'New',
       Code: '',
       Description: '-New-'
-    } as Container;
+    } as Category;
 
-    const dialogRef = this.dialog.open(ContainerDetailsComponent, {
+    const dialogRef = this.dialog.open(CategoryDetailsComponent, {
       data: {
         isCreate: true,
         item: Object.assign({}, newItem)
@@ -99,7 +92,7 @@ export class ContainersComponent implements OnInit, OnDestroy {
     });
 
 
-    // const modalRef = this.modalService.open(ContainerDetailsComponent);
+    // const modalRef = this.modalService.open(CategoryDetailsComponent);
     // modalRef.componentInstance.isCreate =  true;
     // modalRef.componentInstance.item = Object.assign({}, newItem);
 
@@ -113,7 +106,7 @@ export class ContainersComponent implements OnInit, OnDestroy {
     //   .subscribe(list => (this.items = list));
   }
 
-  remove(item: Container) {
+  remove(item: Category) {
     this.containerService
       .delete(item.Id)
       .pipe(

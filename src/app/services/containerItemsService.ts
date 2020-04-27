@@ -7,6 +7,6 @@ import { ODataService } from 'odata-v4-ng';
 export class ContainerItemsService extends ODataBasicService<ContainerItem> {
   constructor(odataService: ODataService) {
     super(odataService);
-    this.setName = "ContainerItems";
+    this.setName = "ContainerItem";
   }
 }

@@ -33,7 +33,7 @@ export class ODataBasicService<T> implements IODataBasicService {
   private get query() {
     return new ODataQuery(
       this.odataService,
-      "http://192.168.0.7:3000/"
+      "https://localhost:44309/odata/"
     ).entitySet(this._setName);
   }
 

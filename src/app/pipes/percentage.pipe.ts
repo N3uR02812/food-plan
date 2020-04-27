@@ -12,6 +12,6 @@ export class PercentagePipe implements PipeTransform {
       if (maxAmount === 0) {
         return 0;
       }
-      return currentAmount / maxAmount;
+      return currentAmount / maxAmount * 100;
   }
 }

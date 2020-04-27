@@ -1,178 +1,90 @@
-<div class="modal-header">
-  <h4 class="modal-title">
-    <ng-container *ngIf="isCreate; else h4Template">
-      Erstellen
+<div class="d-flex">
+  <img mat-card-avatar *ngIf="item.Image" [src]="item.Image | sanitizer">
+  <h2 class="ml-1 my-auto" mat-dialog-title>
+    <ng-container *ngIf="isCreate; else h2Template">
+      Create
     </ng-container>
-    <ng-template #h4Template>
-      Bearbeiten {{item.Name}}
+    <ng-template #h2Template>
+      Edit {{item.Name}}
     </ng-template>
-  </h4>
-  <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
-    <span aria-hidden="true">&times;</span>
-  </button>
+  </h2>
 </div>
-<div class="modal-body">
-  <ng-container *ngIf="isCreate">
-    <ng-container *ngTemplateOutlet="createTemplate;"></ng-container>
-  </ng-container>
-  <ng-container *ngIf="!isCreate">
+
+<mat-dialog-content class="mat-typography">
     <ng-container *ngTemplateOutlet="editTemplate;"></ng-container>
-  </ng-container>
-</div>
-<div class="modal-footer">
-  <ng-container *ngIf="isCreate; else buttonTemplate">
-    <button class="btn" (click)="back()" [disabled]="this.active == this.tabs[0]"> Back </button>
-    <button class="btn ml-1" (click)="next()" [disabled]="this.active == this.tabs[this.tabs.length - 1]"> Next
-    </button>
-    <button class="btn btn-info" (click)="finish()" *ngIf="this.active != this.tabs[this.tabs.length - 1]">
-      Finish
-    </button>
-    <button class="btn btn-success" (click)="save()" *ngIf="this.active == this.tabs[this.tabs.length - 1]">
-      Save
-    </button>
-  </ng-container>
-  <ng-template #buttonTemplate>
-    <button type="button" class="btn btn-success" (click)="save()">Save</button>
-  </ng-template>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button mat-button color="accent" [mat-dialog-close]="item" cdkFocusInitial>Save</button>
+</mat-dialog-actions>
 
-
-</div>
-
-<ng-template #createTemplate>
-  <ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-pills" (activeIdChange)="onActiveIdChange($event)">
-    <li ngbNavItem="general">
-      <a ngbNavLink>Name</a>
-      <ng-template ngbNavContent>
-        <div class="col-12">
-          <div class="form-group">
-            <label>Name</label>
-            <input type="text" class="form-control" [(ngModel)]="item.Name">
-          </div>
-          <div class="form-group">
-            <label>Beschreibung</label>
-            <textarea class="form-control" [(ngModel)]="item.Description" rows="3"></textarea>
-          </div>
-        </div>
-      </ng-template>
-    </li>
-    <li ngbNavItem="image">
-      <a ngbNavLink>Foto</a>
-      <ng-template ngbNavContent>
-        <div class="col-12">
-          <div class="form-group">
-            <label>Bild</label>
-            <input type='file' #fileInput (change)="fileChange($event)" class="form-control" accept="image/*">
-          </div>
-          <img *ngIf="item.Image" [src]="item.Image | sanitizer"> <br />
-        </div>
-      </ng-template>
-    </li>
-    <li ngbNavItem="amount">
-      <a ngbNavLink>Anzahl</a>
-      <ng-template ngbNavContent>
-        <div class="col-12">
-          <div class="row">
-            <div class="col-5">
-              <div class="form-group">
-                <label>{{item.AmountType || 'Anzahl'}} (Aktuell)</label>
-                <input class="form-control" type="number" [(ngModel)]="item.CurrentAmount">
-              </div>
-            </div>
-            <div class="col-2">
-              <div class="form-group">
-                <label>Anzahl Typ</label>
-                <ng-select [items]="amountTypes" [(ngModel)]="item.AmountType">
-                </ng-select>
-              </div>
-            </div>
-            <div class="col-5">
-              <div class="form-group">
-                <label>{{item.AmountType || 'Anzahl'}} (Max)</label>
-                <input class="form-control" type="number" [(ngModel)]="item.Amount"
-                  (ngModelChange)="maxAmountChange($event)">
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-12">
-          <div class="form-group">
-            <label>{{item.CurrentAmount}} von {{item.Amount}} {{item.AmountType || 'Anzahl'}}</label>
-            <ng5-slider [(value)]="item.CurrentAmount" [options]="options"></ng5-slider>
-          </div>
-        </div>
-      </ng-template>
-    </li>
-    <li ngbNavItem="expiredate">
-      <a ngbNavLink>Verfallsdatum</a>
-      <ng-template ngbNavContent>
-        <label>Ablaufdatum</label>
-        <input class="form-control" placement="top" [bsConfig]="{ dateInputFormat: 'DD.MM.YYYY' }"
-          [(ngModel)]="item.ExpireDate" bsDatepicker>
-      </ng-template>
-    </li>
-    <li ngbNavItem="finish">
-      <a ngbNavLink>Finish</a>
-      <ng-template ngbNavContent>
-        <div class="d-flex">
-          <img *ngIf="item.Image" [src]="item.Image | sanitizer">
-          <dl class="mx-2">
-            <dt>Name</dt>
-            <dd>{{item.Name}}</dd>
-
-            <dt>Beschreibung</dt>
-            <dd>{{item.Description}}</dd>
-          </dl>
-          <dl class="mx-2">
-            <dt>Anzahl</dt>
-            <dd>{{item.CurrentAmount}} von {{item.Amount}} {{item.AmountType || 'Anzahl'}}</dd>
-
-            <dt>Ablaufdatum</dt>
-            <dd>{{item.ExpireDate | date:'dd.MM.yyyy'}}</dd>
-          </dl>
-        </div>
-      </ng-template>
-    </li>
-  </ul>
-  <div [ngbNavOutlet]="nav"></div>
-</ng-template>
 <ng-template #editTemplate>
   <div class="row">
-    <div class="col-md-6">
-      <div class="form-group">
-        <label>Name</label>
-        <input type="text" class="form-control" [(ngModel)]="item.Name">
+    <div class="col-md-12 d-flex flex-column">
+      <mat-form-field>
+        <mat-label>Name</mat-label>
+        <input matInput [(ngModel)]="item.Name">
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Description</mat-label>
+        <textarea matInput [(ngModel)]="item.Description"></textarea>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Image</mat-label>
+        <ngx-mat-file-input (change)="fileChange($event)" accept="image/*"></ngx-mat-file-input>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Categories</mat-label>
+        <mat-select [(ngModel)]="item.Categories" multiple>
+          <mat-select-trigger>
+            {{item.Categories && item.Categories[0] ? item.Categories[0].Name : ''}}
+            <span *ngIf="item.Categories?.length > 1" class="example-additional-selection">
+              (+{{item.Categories.length - 1}} {{item.Categories?.length === 2 ? 'other' : 'others'}})
+            </span>
+          </mat-select-trigger>
+          <mat-option *ngFor="let category of categories" [value]="category">
+            <mat-icon [style.color]="category.Color" matSuffix> {{category.Logo}}</mat-icon> {{category.Name}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Amount Type</mat-label>
+        <mat-select [(ngModel)]="item.AmountType">
+          <mat-option *ngFor="let amountType of amountTypes" [value]="amountType.value">
+            {{amountType.value}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <div class="row">
+        <div class="col-md-6">
+          <mat-form-field style="width: 100%">
+            <mat-label>{{item.AmountType || 'Anzahl'}} (Max)</mat-label>
+            <input type="number" matInput [(ngModel)]="item.Amount">
+          </mat-form-field>
+        </div>
+
+        <div class="col-md-6">
+          <mat-form-field style="width: 100%">
+            <mat-label >{{item.AmountType || 'Anzahl'}} (Aktuell)</mat-label>
+            <input type="number" matInput [(ngModel)]="item.CurrentAmount">
+          </mat-form-field>
+        </div>
       </div>
-      <div class="form-group">
-        <label>Beschreibung</label>
-        <textarea class="form-control" [(ngModel)]="item.Description" rows="3"></textarea>
-      </div>
-      <div class="form-group">
-        <label>Bild</label>
-        <input type='file' (change)="fileChange($event)" class="form-control" accept="image/*">
-      </div>
-      <img *ngIf="item.Image" [src]="item.Image | sanitizer"> <br />
-    </div>
-    <div class="col-md-6">
-      <div class="form-group">
-        <label>Anzahl Typ</label>
-        <ng-select [items]="amountTypes" [(ngModel)]="item.AmountType">
-        </ng-select>
-      </div>
-      <div class="form-group">
-        <label>{{item.AmountType || 'Anzahl'}} (Max)</label>
-        <input class="form-control" type="number" [(ngModel)]="item.Amount"
-          (ngModelChange)="maxAmountChange($event)">
-      </div>
-      <div class="form-group">
-        <label>{{item.AmountType || 'Anzahl'}} (Aktuell)</label>
-        <input class="form-control" type="number" [(ngModel)]="item.CurrentAmount">
-        <ng5-slider [(value)]="item.CurrentAmount" [options]="options"></ng5-slider>
-      </div>
-      <div class="form-group">
-        <label>Ablaufdatum</label>
-        <input class="form-control" placement="top" [bsConfig]="{ dateInputFormat: 'DD.MM.YYYY' }"
-          [(ngModel)]="item.ExpireDate" bsDatepicker>
-      </div>
+
+      <mat-slider class="my-auto"
+            [(ngModel)]="item.CurrentAmount" min="0.1" step="0.1" [max]="item.Amount"></mat-slider>
+
+      <mat-form-field>
+        <mat-label>Ablaufdatum</mat-label>
+        <input matInput [matDatepicker]="picker" [(ngModel)]="item.ExpireDate">
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker touchUi #picker></mat-datepicker>
+      </mat-form-field>
     </div>
   </div>
 </ng-template>

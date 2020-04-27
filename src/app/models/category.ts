@@ -1,5 +1,5 @@
 import { Base } from './base';
-import { ContainerItem } from "./ContainerItem";
+import { ContainerItem } from './ContainerItem';
 
 
 export class Category extends Base {
@@ -8,7 +8,7 @@ export class Category extends Base {
 
   public Color: string;
 
-  public Items:ContainerItem[]
+  public Items: ContainerItem[];
 
   constructor() {
     super();

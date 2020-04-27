@@ -8,13 +8,13 @@ import { switchMap, toArray } from 'rxjs/operators';
 import { ODataQuery } from 'odata-v4-ng';
 import { QueryBuilder } from 'src/app/helper/queryBuilder';
 import { ContainerItemsDetailsComponent } from '../containersItemDetails/containersItemDetails.component';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ActivatedRoute } from '@angular/router';
 import { ContainerService } from 'src/app/services/containerService';
 import { of } from 'rxjs/internal/observable/of';
 import { Subscription, from } from 'rxjs';
 import { ButtonInfo } from 'src/app/helper/buttonInfo';
 import { AmountTypes } from 'src/app/helper/amountType';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-containersItems',
@@ -23,9 +23,13 @@ import { AmountTypes } from 'src/app/helper/amountType';
 })
 export class ContainerItemsComponent implements OnInit, OnDestroy {
   public items: ContainerItem[] = [];
+
   public filter: string = null;
   public containerId: string = null;
+  public categoryId: string = null;
+
   public today = new Date();
+
   private subscriptions: Subscription[] = [];
   public buttons: ButtonInfo[] = [
     new ButtonInfo('btn-danger', 'fa-edit', this.details),
@@ -33,7 +37,7 @@ export class ContainerItemsComponent implements OnInit, OnDestroy {
   ];
 
   constructor(
-    public modalService: NgbModal,
+    public dialog: MatDialog,
     public activeRoute: ActivatedRoute,
     public containerItemsService: ContainerItemsService,
     public appService: AppService,
@@ -63,7 +67,11 @@ export class ContainerItemsComponent implements OnInit, OnDestroy {
       switchMap(params => {
         if (params.container) {
           this.containerId = params.container;
-        } else {
+        }
+        else if (params.category) {
+          this.categoryId = params.category;
+        }
+        else {
           this.containerId = null;
         }
 
@@ -86,22 +94,30 @@ export class ContainerItemsComponent implements OnInit, OnDestroy {
   }
 
   load() {
+    let obs = of([]);
     if (this.containerId) {
-      return this.containerItemsService.getFilter(
+      obs = this.containerItemsService.getFilter(
         'ContainerId eq \'' + this.containerId + '\''
       );
-    } else {
-      return this.containerItemsService
-        .getList()
-        .pipe(switchMap(items => {
-          return from(items)
-            .pipe(switchMap(item => {
-              item.ExpireDate = item.ExpireDate ? new Date(item.ExpireDate) : null;
-              return of(item);
-            }))
-            .pipe(toArray());
-        }));
     }
+    else if (this.categoryId) {
+      obs = this.containerItemsService.getFilter(
+        'ContainerId eq \'' + this.categoryId + '\''
+      );
+    }
+    else {
+      obs = this.containerItemsService
+        .getList();
+    }
+
+    return obs.pipe(switchMap(items => {
+      return from(items)
+        .pipe(switchMap(item => {
+          item.ExpireDate = item.ExpireDate ? new Date(item.ExpireDate) : null;
+          return of(item);
+        }))
+        .pipe(toArray());
+    }));
   }
 
   search(value: string) {
@@ -121,8 +137,19 @@ export class ContainerItemsComponent implements OnInit, OnDestroy {
   }
 
   details(item: ContainerItem) {
-    const modalRef = this.modalService.open(ContainerItemsDetailsComponent, { size: 'xl' });
-    modalRef.componentInstance.item = Object.assign({}, item);
+    const dialogRef = this.dialog.open(ContainerItemsDetailsComponent, {
+      data: {
+        isCreate: false,
+        item: Object.assign({}, item)
+      }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.containerItemsService.patch(result, result.Id).subscribe(() => {
+          this.appService.reloadPressedSubject.next();
+        });
+      }
+    });
   }
 
   add() {
@@ -140,9 +167,20 @@ export class ContainerItemsComponent implements OnInit, OnDestroy {
       Description: '-New-'
     } as ContainerItem;
 
-    const modalRef = this.modalService.open(ContainerItemsDetailsComponent, { size: 'xl' });
-    modalRef.componentInstance.isCreate =  true;
-    modalRef.componentInstance.item = Object.assign({}, newItem);
+    const dialogRef = this.dialog.open(ContainerItemsDetailsComponent, {
+      data: {
+        isCreate: true,
+        item: Object.assign({}, newItem)
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.containerItemsService.post(result).subscribe(() => {
+          this.appService.reloadPressedSubject.next();
+        });
+      }
+    });
   }
 
   getDayDifference(date1: Date, date2: Date) {

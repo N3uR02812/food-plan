@@ -1,34 +1,46 @@
 <div class="row mx-0 p-3">
   <ng-container *ngFor="let item of items">
     <ng-container *ngIf="filter == null || item.Name.toLowerCase().indexOf(filter.toLowerCase()) >= 0">
-      <app-card class="col-md-6 col-lg-4 px-1" [contentTemplate]="content" [btnTemplate]="buttons" [item]="item">
+      <app-card class="col-md-6 col-lg-3 px-1" [headTemplate]="head" [contentTemplate]="content"
+        [actionsTemplate]="buttons" [item]="item">
       </app-card>
     </ng-container>
   </ng-container>
 </div>
 
 <ng-template #buttons let-item="item">
-  <button type="button" (click)="details(item)" class="btn flex-fill btn-info">
-    <i class="fas fa-edit"></i>
-  </button>
-  <button type="button" (click)="remove(item)" class="btn flex-fill btn-danger">
-    <i class="fas fa-trash"></i>
-  </button>
+  <button mat-flat-button mat-button (click)="details(item)"><i class="fas fa-edit"></i></button>
+  <button color="warn" mat-flat-button mat-button (click)="remove(item)"><i class="fas fa-trash"></i></button>
+</ng-template>
+
+<ng-template #head let-item="item">
+  <div class="d-flex flex-column w-100">
+    <div class="d-flex ml-auto">
+      <div *ngFor="let category of item.Categories" class="flex-fill d-flex chip"
+        [style.backgroundColor]="category.Color | transparency: .25">
+        <mat-icon [style.color]="category.Color" matSuffix> {{category.Logo}}</mat-icon>
+      </div>
+    </div>
+    <div class="d-flex">
+      <img mat-card-avatar *ngIf="item.Image" [src]="item.Image | sanitizer">
+      <div class="d-flex flex-column ml-1">
+        <mat-card-title>{{item.Name}}</mat-card-title>
+        <mat-card-subtitle>{{item.Description}}</mat-card-subtitle>
+      </div>
+    </div>
+  </div>
 </ng-template>
 
 <ng-template #content let-item="item">
-  <div class="d-flex flex-column p-1">
-    <div class="d-flex" style="height: 80px;">
-      <img *ngIf="item.Image" [src]="item.Image | sanitizer" style="max-width: 80px;max-height: 80px;">
-      <h5 class="card-title ml-1 mt-2">{{item.Name}}</h5>
-    </div>
-    <div class="d-flex flex-column pt-1">
-      <ngb-progressbar type="info" [value]="item.CurrentAmount | percentage : item.Amount" [max]="1" height="20px">
-      </ngb-progressbar>
+  <div class="d-flex flex-column px-1 py-2 card-content">
+    <div>
+      <mat-progress-bar mode="determinate" [value]="item.CurrentAmount | percentage : item.Amount"></mat-progress-bar>
       <span> {{item.CurrentAmount}} of {{item.Amount}} {{item.AmountType}}</span>
-      <ngb-progressbar type="{{getDayDifference(today, item.ExpireDate) | percentage : 30 | barColor}}"
-        [value]="getDayDifference(today, item.ExpireDate) | percentage : 30" [max]="1" height="20px">
-      </ngb-progressbar>
+    </div>
+
+    <div class="mt-2">
+      <mat-progress-bar mode="determinate" [value]="getDayDifference(today, item.ExpireDate) | percentage : 30">
+      </mat-progress-bar>
       <span [ngStyle]="{'visibility':item.ExpireDate  ? 'visible' : 'hidden'}"> Haltbar bis
         {{item.ExpireDate | date:'dd.MM.yyyy'}}</span>
     </div>

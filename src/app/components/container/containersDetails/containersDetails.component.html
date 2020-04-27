@@ -17,7 +17,7 @@
     <div class="col">
       <mat-form-field class="example-full-width">
         <mat-label>Description</mat-label>
-        <input matInput [(ngModel)]="item.Description">
+        <textarea matInput [(ngModel)]="item.Description"></textarea>
       </mat-form-field>
     </div>
   </div>
@@ -26,3 +26,4 @@
   <button mat-button mat-dialog-close>Cancel</button>
   <button mat-button color="accent" [mat-dialog-close]="item" cdkFocusInitial>Save</button>
 </mat-dialog-actions>
+

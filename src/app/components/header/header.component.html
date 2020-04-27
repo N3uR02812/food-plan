@@ -22,7 +22,7 @@
 </nav> -->
 
 <mat-toolbar class="navbar" color="primary">
-  <mat-toolbar-row class="d-flex" class="shadowed">
+  <mat-toolbar-row class="d-flex shadowed">
     <span class="mr-2">Kittenparty</span>
     <a mat-button routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
       routerLink="./container">Container</a>
@@ -31,7 +31,7 @@
     <a mat-button routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
       routerLink="./categories">Categories</a>
   </mat-toolbar-row>
-  <mat-toolbar-row class="d-flex">
+  <mat-toolbar-row class="d-flex options-row">
     <mat-form-field class="example-full-width">
       <input type="text" matInput [(ngModel)]="searchText" placeholder="Search...">
     </mat-form-field>

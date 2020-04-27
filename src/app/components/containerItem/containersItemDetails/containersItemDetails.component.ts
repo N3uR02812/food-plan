@@ -1,13 +1,12 @@
-import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
-import { ContainerItemsService } from 'src/app/services/containerItemsService';
+import { Component, OnInit, Input, ViewChild, Inject } from '@angular/core';
 import { ContainerItem } from 'src/app/models/ContainerItem';
 import { AppService } from 'src/app/services/appService';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NgbActiveModal, NgbNavItem, NgbNavbar, NgbNav } from '@ng-bootstrap/ng-bootstrap';
-import { ContainerService } from 'src/app/services/containerService';
-import { Options } from 'ng5-slider';
 import { AmountTypes } from 'src/app/helper/amountType';
 import { Ng2ImgMaxService } from 'ng2-img-max/dist/src/ng2-img-max.service';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Category } from 'src/app/models/category';
+import { CategoryService } from 'src/app/services/categoryService';
 
 @Component({
   selector: 'app-containersItemDetails',
@@ -18,82 +17,54 @@ export class ContainerItemsDetailsComponent implements OnInit {
   @Input() item: ContainerItem = new ContainerItem();
   @Input() isCreate: boolean = false;
 
-  @ViewChild('nav') nav: NgbNav = null;
   @ViewChild('fileInput') fileInput: HTMLElement = null;
 
-  public amountTypes = AmountTypes;
-  public options: Options = null;
+  public amountTypes = null;
   public active: string = null;
   public activeTabIndex: number = 0;
   public tabs: string[] = [
     'general', 'image', 'amount', 'expiredate', 'finish'
   ];
 
+  public categories: Category[] = [];
+
   constructor(
-    public activeModal: NgbActiveModal,
+    @Inject(MAT_DIALOG_DATA) public data: any,
     public activeRoute: ActivatedRoute,
     public router: Router,
-    public containerService: ContainerService,
-    public containerItemsService: ContainerItemsService,
     public appService: AppService,
+    public containerService: CategoryService,
     private ng2ImgMaxService: Ng2ImgMaxService
-  ) { }
+  ) {
+    if (data != null) {
+      this.item = data.item;
+      this.isCreate = data.isCreate;
+    }
+    this.amountTypes = AmountTypes
+      .map(key => {
+        return { value: key }
+      });
+  }
 
   ngOnInit(): void {
-    this.options = {
-      floor: 0,
-      ceil: this.item.Amount,
-      step: 0.01
-    };
-
     this.active = this.tabs[this.activeTabIndex];
-  }
 
-  onActiveIdChange($event) {
-    const foundIdx = this.tabs.indexOf($event);
-    if (foundIdx >= 0) {
-      this.activeTabIndex = foundIdx;
-      this.nav.select(this.tabs[this.activeTabIndex]);
-    }
-  }
+    this.containerService.getList().subscribe(categories => {
+      this.categories = categories;
 
-  next() {
-    if (this.activeTabIndex < this.tabs.length) {
-      this.activeTabIndex++;
-      this.nav.select(this.tabs[this.activeTabIndex]);
-    }
-  }
-
-  finish() {
-    const next = 4;
-    this.nav.select(this.tabs[this.tabs.length - 1]);
-  }
-
-  back() {
-    if (this.activeTabIndex > 0) {
-      this.activeTabIndex--;
-      this.nav.select(this.tabs[this.activeTabIndex]);
-    }
-  }
-
-  save() {
-    if (this.isCreate) {
-      this.containerItemsService.post(this.item).subscribe(() => {
-        this.activeModal.close();
-        this.appService.reloadPressedSubject.next();
+      this.item.Categories = this.categories.filter((c) => {
+        return this.item.Categories
+          .findIndex((ci) => ci.Id === c.Id);
       });
-    } else {
-      this.containerItemsService.patch(this.item, this.item.Id).subscribe(() => {
-        this.activeModal.close();
-        this.appService.reloadPressedSubject.next();
-      });
-    }
+    });
   }
 
-  maxAmountChange(max: number) {
-    const newOptions: Options = Object.assign({}, this.options);
-    newOptions.ceil = max;
-    this.options = newOptions;
+  formatLabel(value: number) {
+    if (value >= 1000) {
+      return Math.round(value / 1000) + 'k';
+    }
+
+    return value;
   }
 
   fileChange(event) {

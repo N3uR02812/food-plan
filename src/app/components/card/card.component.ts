@@ -8,8 +8,9 @@ import { ButtonInfo } from 'src/app/helper/buttonInfo';
 })
 export class CardComponent implements OnInit {
 
-  @Input() btnTemplate: TemplateRef<any>;
-  @Input() contentTemplate: TemplateRef<any>;
+  @Input() headTemplate: TemplateRef<any> = null;
+  @Input() contentTemplate: TemplateRef<any> = null;
+  @Input() actionsTemplate: TemplateRef<any> = null;
   @Input() item: any = null;
 
   constructor() { }

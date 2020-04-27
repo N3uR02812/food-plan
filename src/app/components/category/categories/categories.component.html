@@ -8,7 +8,7 @@
 
 <ng-template #buttons let-item="item">
   <button mat-flat-button mat-button (click)="details(item)"><i class="fas fa-edit"></i></button>
-  <a mat-flat-button mat-button routerLink="/items" [queryParams]="{ container: item.Id }">
+  <a mat-flat-button mat-button routerLink="/items" [queryParams]="{ category: item.Id }">
     <i class="fas fa-level-down-alt"></i>
   </a>
   <button color="warn" mat-flat-button mat-button (click)="remove(item)"><i class="fas fa-trash"></i></button>
@@ -16,8 +16,8 @@
 
 <ng-template #head let-item="item">
   <div class="d-flex">
-    <div mat-card-avatar class="example-header-image">
-      <mat-icon matSuffix>work</mat-icon>
+    <div mat-card-avatar class="example-header-image" [style.backgroundColor]="item.Color | transparency: .25">
+      <mat-icon class="ml-2 mt-2" [style.color]="item.Color"  matSuffix>{{item.Logo}}</mat-icon>
     </div>
 
     <div class="d-flex flex-column ml-1">
