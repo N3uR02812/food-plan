@@ -41,6 +41,7 @@ import { CategoriesComponent } from './components/category/categories/categories
 import { CategoryDetailsComponent } from './components/category/categoriesDetails/categoriesDetails.component';
 import { CategoryService } from './services/categoryService';
 import { TransparencyPipe } from './pipes/transparency.pipe';
+import { CategoryContainerItemRelationService } from './services/categoryContainerItemRelationService';
 
 @NgModule({
   declarations: [
@@ -89,6 +90,7 @@ import { TransparencyPipe } from './pipes/transparency.pipe';
     ContainerService,
     ContainerItemsService,
     CategoryService,
+    CategoryContainerItemRelationService,
     ODataBasicService,
     ODataService],
   bootstrap: [AppComponent],

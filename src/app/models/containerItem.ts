@@ -23,8 +23,6 @@ export class ContainerItem extends Base {
 
   public Container:Container;
 
-  public Categories:Category[];
-
   constructor() {
     super();
     this.Attributes= "",

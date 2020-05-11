@@ -30,6 +30,7 @@
     "bootstrap": "^4.4.1",
     "bootstrap-icons": "^1.0.0-alpha2",
     "color": "^3.1.2",
+    "lodash": "^4.17.15",
     "material-components-web": "^5.1.0",
     "ng2-img-max": "^2.2.4",
     "ngx-material-file-input": "^2.1.1",

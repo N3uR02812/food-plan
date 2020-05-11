@@ -8,8 +8,6 @@ export class Category extends Base {
 
   public Color: string;
 
-  public Items: ContainerItem[];
-
   constructor() {
     super();
   }

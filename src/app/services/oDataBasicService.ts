@@ -1,14 +1,14 @@
-import { Container } from "@angular/compiler/src/i18n/i18n_ast";
-import { Observable, of } from "rxjs";
+import { Container } from '@angular/compiler/src/i18n/i18n_ast';
+import { Observable, of } from 'rxjs';
 import {
   ODataQuery,
   ODataService,
   ODataResponse,
   HttpOptions
-} from "odata-v4-ng";
-import { Injectable } from "@angular/core";
-import { map, switchMap } from "rxjs/operators";
-import { HttpResponse } from "@angular/common/http";
+} from 'odata-v4-ng';
+import { Injectable } from '@angular/core';
+import { map, switchMap } from 'rxjs/operators';
+import { HttpResponse } from '@angular/common/http';
 
 export interface IODataBasicService {
   get(key: string): Observable<any>;
@@ -26,14 +26,14 @@ export interface IODataBasicService {
 
 @Injectable()
 export class ODataBasicService<T> implements IODataBasicService {
-  public _setName: string = "";
+  public _setName: string = '';
 
   constructor(public odataService: ODataService) {}
 
   private get query() {
     return new ODataQuery(
       this.odataService,
-      "https://localhost:44309/odata/"
+      'http://192.168.0.7:3000/'
     ).entitySet(this._setName);
   }
 
@@ -43,7 +43,7 @@ export class ODataBasicService<T> implements IODataBasicService {
 
   public get(key: string): Observable<T> {
     return this.query
-      .entityKey("'" + key + "'")
+      .entityKey('\'' + key + '\'')
       .get()
       .pipe(map(data => data.toComplexValue<T>()));
   }
@@ -65,19 +65,19 @@ export class ODataBasicService<T> implements IODataBasicService {
 
   public put(body: any, key: string): Observable<T> {
     return this.query
-      .entityKey("'" + key + "'")
+      .entityKey('\'' + key + '\'')
       .put(body, key)
       .pipe(map(data => data.toComplexValue<T>()));
   }
 
   public patch(body: any, key: string): Observable<T> {
     return this.query
-      .entityKey("'" + key + "'")
+      .entityKey('\'' + key + '\'')
       .patch(body, key)
       .pipe(map(data => data.toComplexValue<T>()));
   }
 
   public delete(key: string): Observable<any> {
-    return this.query.entityKey("'" + key + "'").delete(key);
+    return this.query.entityKey('\'' + key + '\'').delete(key);
   }
 }

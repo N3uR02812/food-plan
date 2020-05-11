@@ -4,7 +4,7 @@ import { ContainerItemsService } from 'src/app/services/containerItemsService';
 import { ContainerItem } from 'src/app/models/ContainerItem';
 import { AppService } from 'src/app/services/appService';
 import { v4 as uuid } from 'uuid';
-import { switchMap, toArray } from 'rxjs/operators';
+import { switchMap, toArray, switchMapTo, map, flatMap, concatMap } from 'rxjs/operators';
 import { ODataQuery } from 'odata-v4-ng';
 import { QueryBuilder } from 'src/app/helper/queryBuilder';
 import { ContainerItemsDetailsComponent } from '../containersItemDetails/containersItemDetails.component';
@@ -15,6 +15,7 @@ import { Subscription, from } from 'rxjs';
 import { ButtonInfo } from 'src/app/helper/buttonInfo';
 import { AmountTypes } from 'src/app/helper/amountType';
 import { MatDialog } from '@angular/material/dialog';
+import { ContainerItemViewModel } from 'src/app/models/containerItemViewModel';
 
 @Component({
   selector: 'app-containersItems',
@@ -22,7 +23,7 @@ import { MatDialog } from '@angular/material/dialog';
   styleUrls: ['./containersItems.component.scss']
 })
 export class ContainerItemsComponent implements OnInit, OnDestroy {
-  public items: ContainerItem[] = [];
+  public items: ContainerItemViewModel[] = [];
 
   public filter: string = null;
   public containerId: string = null;
@@ -55,7 +56,9 @@ export class ContainerItemsComponent implements OnInit, OnDestroy {
           return this.load();
         })
       )
-      .subscribe(list => (this.items = list));
+      .subscribe(
+        list => { this.items = list },
+        err => { console.error(err); });
 
     const searchSub = this.appService.searchPressed.subscribe(value => {
       this.search(value);
@@ -75,15 +78,10 @@ export class ContainerItemsComponent implements OnInit, OnDestroy {
           this.containerId = null;
         }
 
-        return this.load().pipe(
-          switchMap(list => {
-            this.items = list;
-            return of(null);
-          })
-        );
+        return this.load();
       })
     )
-      .subscribe();
+      .subscribe(list => { this.items = list; }, err => { console.error(err); });
   }
 
   public ngOnDestroy(): void {
@@ -94,27 +92,36 @@ export class ContainerItemsComponent implements OnInit, OnDestroy {
   }
 
   load() {
-    let obs = of([]);
+    let obs = of<ContainerItemViewModel[]>([]);
     if (this.containerId) {
       obs = this.containerItemsService.getFilter(
         'ContainerId eq \'' + this.containerId + '\''
-      );
+      ).pipe(map(items => items.map(item => new ContainerItemViewModel(item))));
     }
     else if (this.categoryId) {
       obs = this.containerItemsService.getFilter(
         'ContainerId eq \'' + this.categoryId + '\''
-      );
+      ).pipe(map(items => items.map(item => new ContainerItemViewModel(item))));
     }
     else {
       obs = this.containerItemsService
-        .getList();
+        .getList()
+        .pipe(map(items => items.map(item => new ContainerItemViewModel(item))));
     }
 
     return obs.pipe(switchMap(items => {
       return from(items)
-        .pipe(switchMap(item => {
+        .pipe(flatMap(item => {
           item.ExpireDate = item.ExpireDate ? new Date(item.ExpireDate) : null;
-          return of(item);
+          return this.containerItemsService.getCategoryRelation(item.Id)
+            .pipe(switchMap(relations => {
+              return this.appService.Categories;
+            }))
+            .pipe(switchMap(relations => {
+              
+              console.log("Test");
+              return of(item);
+            }));
         }))
         .pipe(toArray());
     }));
@@ -153,7 +160,7 @@ export class ContainerItemsComponent implements OnInit, OnDestroy {
   }
 
   add() {
-    const newItem = {
+    const itemData = {
       Attributes: '',
       Amount: 1,
       CurrentAmount: 1,
@@ -167,6 +174,8 @@ export class ContainerItemsComponent implements OnInit, OnDestroy {
       Description: '-New-'
     } as ContainerItem;
 
+    const newItem = new ContainerItemViewModel(itemData);
+
     const dialogRef = this.dialog.open(ContainerItemsDetailsComponent, {
       data: {
         isCreate: true,
@@ -174,11 +183,14 @@ export class ContainerItemsComponent implements OnInit, OnDestroy {
       }
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result: ContainerItemViewModel) => {
       if (result) {
-        this.containerItemsService.post(result).subscribe(() => {
-          this.appService.reloadPressedSubject.next();
-        });
+        this.containerItemsService
+          .post(result)
+          .pipe(switchMap(ret => this.containerItemsService.setCategories(ret.Id, result.Categories)))
+          .subscribe(() => {
+            this.appService.reloadPressedSubject.next();
+          });
       }
     });
   }

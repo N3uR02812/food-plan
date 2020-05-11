@@ -1,22 +1,24 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { ContainerService } from './services/containerService';
 import { DOCUMENT } from '@angular/common';
+import { AppService } from './services/appService';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'Verwaltung';
   json = {};
 
-  constructor(public containerService: ContainerService,
-    @Inject(DOCUMENT) public document: Document) {
+  constructor(
+    @Inject(DOCUMENT) public document: Document,
+    public appService: AppService) {
 
   }
 
-  ngOnInit() {
-    this.containerService.getList().subscribe(data => this.json = data);
+  public ngOnInit() {
+    this.appService.reloadCategories();
   }
 }

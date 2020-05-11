@@ -3,7 +3,7 @@ import { Category } from 'src/app/models/category';
 import { AppService } from 'src/app/services/appService';
 import { v4 as uuid } from 'uuid';
 import { switchMap } from 'rxjs/operators';
-import { Subscription } from 'rxjs';
+import { Subscription, Observable } from 'rxjs';
 import { CategoryDetailsComponent } from '../categoriesDetails/categoriesDetails.component';
 import { ButtonInfo } from 'src/app/helper/buttonInfo';
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -48,8 +48,8 @@ export class CategoriesComponent implements OnInit, OnDestroy {
     this.subscriptions = [];
   }
 
-  load() {
-    return this.containerService.getList();
+  load(): Observable<Category[]> {
+    return this.appService.Categories;
   }
 
   details(item: Category) {
@@ -109,11 +109,6 @@ export class CategoriesComponent implements OnInit, OnDestroy {
   remove(item: Category) {
     this.containerService
       .delete(item.Id)
-      .pipe(
-        switchMap(_ => {
-          return this.load();
-        })
-      )
-      .subscribe(list => (this.items = list));
+      .subscribe(() => {this.appService.reloadPressedSubject.next();});
   }
 }

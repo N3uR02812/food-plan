@@ -1,30 +1,47 @@
 import { Injectable } from '@angular/core';
-import { Subject, Observable } from 'rxjs';
+import { Subject, Observable, BehaviorSubject, of } from 'rxjs';
+import { Category } from '../models/category';
+import { CategoryService } from './categoryService';
+import { switchMap } from 'rxjs/operators';
 
 
 @Injectable()
 export class AppService {
 
-    reloadPressedSubject: Subject<void> = new Subject<void>();
-    addPressedSubject: Subject<void> = new Subject<void>();
-    searchPressedSubject: Subject<string> = new Subject<string>();
+  categoriesSubject: BehaviorSubject<Category[]> = new BehaviorSubject([]);
+  reloadPressedSubject: Subject<void> = new Subject<void>();
+  addPressedSubject: Subject<void> = new Subject<void>();
+  searchPressedSubject: Subject<string> = new Subject<string>();
 
-    constructor() {
-    }
+  constructor(private categoryService: CategoryService) {
+    this.reloadPressed.subscribe(() => this.reloadCategories().subscribe());
+    this.reloadCategories().subscribe();
+  }
 
-    get label(): Observable<string> {
-      return this.searchPressedSubject.asObservable();
-    }
+  get Categories(): Observable<Category[]> {
+    return this.categoriesSubject.asObservable();
+  }
 
-    get searchPressed(): Observable<string> {
-      return this.searchPressedSubject.asObservable();
-    }
+  reloadCategories(): Observable<Category[]> {
+    return this.categoryService.getList().pipe(switchMap(categories => {
+      this.categoriesSubject.next(categories);
+      return of(categories);
+    }));
+  }
 
-    get reloadPressed(): Observable<void> {
-      return this.reloadPressedSubject.asObservable();
-    }
+  get label(): Observable<string> {
+    return this.searchPressedSubject.asObservable();
+  }
 
-    get addPressed(): Observable<void> {
-      return this.addPressedSubject.asObservable();
-    }
+  get searchPressed(): Observable<string> {
+    return this.searchPressedSubject.asObservable();
+  }
+
+  get reloadPressed(): Observable<void> {
+    return this.reloadPressedSubject.asObservable();
+  }
+
+  get addPressed(): Observable<void> {
+    return this.addPressedSubject.asObservable();
+  }
 }

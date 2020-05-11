@@ -7,6 +7,7 @@ import { Ng2ImgMaxService } from 'ng2-img-max/dist/src/ng2-img-max.service';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Category } from 'src/app/models/category';
 import { CategoryService } from 'src/app/services/categoryService';
+import { ContainerItemViewModel } from 'src/app/models/containerItemViewModel';
 
 @Component({
   selector: 'app-containersItemDetails',
@@ -14,7 +15,7 @@ import { CategoryService } from 'src/app/services/categoryService';
   styleUrls: ['./containersItemDetails.component.scss']
 })
 export class ContainerItemsDetailsComponent implements OnInit {
-  @Input() item: ContainerItem = new ContainerItem();
+  @Input() item: ContainerItemViewModel = new ContainerItemViewModel(null);
   @Input() isCreate: boolean = false;
 
   @ViewChild('fileInput') fileInput: HTMLElement = null;
@@ -49,13 +50,13 @@ export class ContainerItemsDetailsComponent implements OnInit {
   ngOnInit(): void {
     this.active = this.tabs[this.activeTabIndex];
 
-    this.containerService.getList().subscribe(categories => {
+    this.appService.Categories.subscribe(categories => {
       this.categories = categories;
 
-      this.item.Categories = this.categories.filter((c) => {
-        return this.item.Categories
-          .findIndex((ci) => ci.Id === c.Id);
-      });
+      // this.item.Categories = this.categories.filter((c) => {
+      //   return this.item.Categories
+      //     .findIndex((ci) => ci.Id === c.Id);
+      // });
     });
   }
 
