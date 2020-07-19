@@ -23,11 +23,10 @@
 
 <mat-toolbar class="navbar" color="primary">
   <mat-toolbar-row class="d-flex shadowed">
-    <span class="mr-2">Kittenparty</span>
+    <span class="mr-2">{{(appService.Config | async)?.TITLE}}</span>
     <a mat-button routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
       routerLink="./container">Container</a>
-    <a mat-button routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
-      routerLink="./items">Items</a>
+    <a mat-button routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" routerLink="./items">Items</a>
     <a mat-button routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
       routerLink="./categories">Categories</a>
   </mat-toolbar-row>
@@ -37,7 +36,14 @@
     </mat-form-field>
     <mat-icon matSuffix>search</mat-icon>
 
-    <h4 class="pl-2 pt-1 m-0">{{label}}</h4>
+    <h4 class="pl-4 pt-4 m-0 d-flex">
+      <ng-container *ngIf="category != null">
+        <mat-icon [style.color]="category.Color" class="mt-1 mr-1" matSuffix> {{category.Logo}}</mat-icon> <p>{{category.Name}}</p>
+      </ng-container>
+      <ng-container *ngIf="container != null">
+        <mat-icon matSuffix class="mt-1 mr-1">work</mat-icon>  <p>{{container.Name}}</p>
+      </ng-container>
+    </h4>
 
     <button class="ml-auto" mat-mini-fab color="accent" (click)="add()">
       <mat-icon>add</mat-icon>

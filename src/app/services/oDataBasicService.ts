@@ -6,9 +6,10 @@ import {
   ODataResponse,
   HttpOptions
 } from 'odata-v4-ng';
-import { Injectable } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 import { map, switchMap } from 'rxjs/operators';
 import { HttpResponse } from '@angular/common/http';
+import { APP_CONFIG } from '../helper/injectionTokens';
 
 export interface IODataBasicService {
   get(key: string): Observable<any>;
@@ -27,14 +28,14 @@ export interface IODataBasicService {
 @Injectable()
 export class ODataBasicService<T> implements IODataBasicService {
   public _setName: string = '';
+  public url: string = 'http://localhost:3000/';
 
-  constructor(public odataService: ODataService) {}
+  constructor(public odataService: ODataService, @Inject(APP_CONFIG) config: any) {
+    this.url = config.API_ENDPOINT;
+  }
 
   private get query() {
-    return new ODataQuery(
-      this.odataService,
-      'http://192.168.0.7:3000/'
-    ).entitySet(this._setName);
+    return new ODataQuery( this.odataService, this.url).entitySet(this._setName);
   }
 
   public set setName(setName: string) {

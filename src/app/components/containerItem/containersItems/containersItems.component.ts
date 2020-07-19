@@ -4,18 +4,19 @@ import { ContainerItemsService } from 'src/app/services/containerItemsService';
 import { ContainerItem } from 'src/app/models/ContainerItem';
 import { AppService } from 'src/app/services/appService';
 import { v4 as uuid } from 'uuid';
-import { switchMap, toArray, switchMapTo, map, flatMap, concatMap } from 'rxjs/operators';
+import { switchMap, toArray, switchMapTo, map, flatMap, concatMap, catchError } from 'rxjs/operators';
 import { ODataQuery } from 'odata-v4-ng';
 import { QueryBuilder } from 'src/app/helper/queryBuilder';
 import { ContainerItemsDetailsComponent } from '../containersItemDetails/containersItemDetails.component';
 import { ActivatedRoute } from '@angular/router';
 import { ContainerService } from 'src/app/services/containerService';
 import { of } from 'rxjs/internal/observable/of';
-import { Subscription, from } from 'rxjs';
+import { Subscription, from, forkJoin } from 'rxjs';
 import { ButtonInfo } from 'src/app/helper/buttonInfo';
 import { AmountTypes } from 'src/app/helper/amountType';
 import { MatDialog } from '@angular/material/dialog';
 import { ContainerItemViewModel } from 'src/app/models/containerItemViewModel';
+import * as _ from "lodash";
 
 @Component({
   selector: 'app-containersItems',
@@ -76,6 +77,7 @@ export class ContainerItemsComponent implements OnInit, OnDestroy {
         }
         else {
           this.containerId = null;
+          this.categoryId = null;
         }
 
         return this.load();
@@ -99,9 +101,8 @@ export class ContainerItemsComponent implements OnInit, OnDestroy {
       ).pipe(map(items => items.map(item => new ContainerItemViewModel(item))));
     }
     else if (this.categoryId) {
-      obs = this.containerItemsService.getFilter(
-        'ContainerId eq \'' + this.categoryId + '\''
-      ).pipe(map(items => items.map(item => new ContainerItemViewModel(item))));
+      obs = this.containerItemsService.getContainerItemsOfCategory(this.categoryId)
+        .pipe(map(items => items.map(item => new ContainerItemViewModel(item))));
     }
     else {
       obs = this.containerItemsService
@@ -110,20 +111,22 @@ export class ContainerItemsComponent implements OnInit, OnDestroy {
     }
 
     return obs.pipe(switchMap(items => {
-      return from(items)
-        .pipe(flatMap(item => {
-          item.ExpireDate = item.ExpireDate ? new Date(item.ExpireDate) : null;
-          return this.containerItemsService.getCategoryRelation(item.Id)
-            .pipe(switchMap(relations => {
-              return this.appService.Categories;
+      return this.appService.Categories
+        .pipe(switchMap(categories => {
+          return from(items)
+            .pipe(flatMap(item => {
+              item.ExpireDate = item.ExpireDate ? new Date(item.ExpireDate) : null;
+              return this.containerItemsService.getCategoryRelation(item.Id)
+                .pipe(concatMap(rel => {
+                  item.Categories = _.intersectionWith(categories, rel,
+                    (c, r) => {
+                      return c.Id === r.CategoryRelId;
+                    });
+                  return of(item);
+                }));
             }))
-            .pipe(switchMap(relations => {
-              
-              console.log("Test");
-              return of(item);
-            }));
-        }))
-        .pipe(toArray());
+            .pipe(toArray());
+        }));
     }));
   }
 
@@ -152,9 +155,16 @@ export class ContainerItemsComponent implements OnInit, OnDestroy {
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.containerItemsService.patch(result, result.Id).subscribe(() => {
-          this.appService.reloadPressedSubject.next();
-        });
+
+        const categories = result.Categories;
+        result.categories = null;
+
+        this.containerItemsService
+          .patch(result, result.Id)
+          .pipe(concatMap(ret => this.containerItemsService.setCategories(result.Id, categories)))
+          .subscribe(() => {
+            this.appService.reloadPressedSubject.next();
+          });
       }
     });
   }
@@ -185,9 +195,13 @@ export class ContainerItemsComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe((result: ContainerItemViewModel) => {
       if (result) {
+
+        const categories = result.Categories;
+        result.Categories = null;
+
         this.containerItemsService
           .post(result)
-          .pipe(switchMap(ret => this.containerItemsService.setCategories(ret.Id, result.Categories)))
+          .pipe(concatMap(ret => this.containerItemsService.setCategories(ret.Id, categories)))
           .subscribe(() => {
             this.appService.reloadPressedSubject.next();
           });

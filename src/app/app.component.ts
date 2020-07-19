@@ -19,6 +19,6 @@ export class AppComponent implements OnInit {
   }
 
   public ngOnInit() {
-    this.appService.reloadCategories();
+    this.appService.reloadCategories().subscribe();
   }
 }

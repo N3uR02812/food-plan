@@ -42,6 +42,8 @@ import { CategoryDetailsComponent } from './components/category/categoriesDetail
 import { CategoryService } from './services/categoryService';
 import { TransparencyPipe } from './pipes/transparency.pipe';
 import { CategoryContainerItemRelationService } from './services/categoryContainerItemRelationService';
+import { ServiceModule } from './services/service.module';
+import config from '../assets/config/production.json';
 
 @NgModule({
   declarations: [
@@ -84,15 +86,10 @@ import { CategoryContainerItemRelationService } from './services/categoryContain
     MatSelectModule,
     MatSliderModule,
     MatToolbarModule,
-    MaterialFileInputModule
+    MaterialFileInputModule,
+    ServiceModule.forRoot(config)
   ],
-  providers: [AppService,
-    ContainerService,
-    ContainerItemsService,
-    CategoryService,
-    CategoryContainerItemRelationService,
-    ODataBasicService,
-    ODataService],
+  providers: [AppService],
   bootstrap: [AppComponent],
   entryComponents: [
     ModalComponent,

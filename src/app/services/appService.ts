@@ -1,14 +1,16 @@
-import { Injectable } from '@angular/core';
+import { Injectable, InjectionToken } from '@angular/core';
 import { Subject, Observable, BehaviorSubject, of } from 'rxjs';
 import { Category } from '../models/category';
 import { CategoryService } from './categoryService';
 import { switchMap } from 'rxjs/operators';
-
+import { environment } from '../../environments/environment';
+import config from '../../assets/config/production.json';
 
 @Injectable()
 export class AppService {
 
   categoriesSubject: BehaviorSubject<Category[]> = new BehaviorSubject([]);
+  configSubject: BehaviorSubject<any> = new BehaviorSubject(config);
   reloadPressedSubject: Subject<void> = new Subject<void>();
   addPressedSubject: Subject<void> = new Subject<void>();
   searchPressedSubject: Subject<string> = new Subject<string>();
@@ -16,10 +18,15 @@ export class AppService {
   constructor(private categoryService: CategoryService) {
     this.reloadPressed.subscribe(() => this.reloadCategories().subscribe());
     this.reloadCategories().subscribe();
+    this.categoriesSubject.subscribe(data => { console.log(data.length); })
   }
 
   get Categories(): Observable<Category[]> {
     return this.categoriesSubject.asObservable();
+  }
+
+  get Config(): Observable<any> {
+    return this.configSubject.asObservable();
   }
 
   reloadCategories(): Observable<Category[]> {
@@ -44,4 +51,6 @@ export class AppService {
   get addPressed(): Observable<void> {
     return this.addPressedSubject.asObservable();
   }
+
+
 }

@@ -16,10 +16,17 @@
 <ng-template #head let-item="item">
   <div class="d-flex flex-column w-100">
     <div class="d-flex ml-auto">
-      <div *ngFor="let category of item.Categories" class="flex-fill d-flex chip"
-        [style.backgroundColor]="category.Color | transparency: .25">
-        <mat-icon [style.color]="category.Color" matSuffix> {{category.Logo}}</mat-icon>
-      </div>
+      <ng-container *ngIf="item.Categories?.length > 0; else elseTemplate">
+        <div *ngFor="let category of item.Categories;" class="d-flex chip ml-1"
+          [style.backgroundColor]="category.Color | transparency: .25">
+          <mat-icon [style.color]="category.Color" matSuffix> {{category.Logo}}</mat-icon>
+        </div>
+      </ng-container>
+      <ng-template #elseTemplate>
+        <div class="d-flex chip ml-1">
+          <mat-icon [style.color]="" matSuffix></mat-icon>
+        </div>
+      </ng-template>
     </div>
     <div class="d-flex">
       <img mat-card-avatar *ngIf="item.Image" [src]="item.Image | sanitizer">
